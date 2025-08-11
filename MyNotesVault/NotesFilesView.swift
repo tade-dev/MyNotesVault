@@ -12,11 +12,13 @@ struct NotesFilesView: View {
     var folderTitle: String?
     @ObservedObject var vm: NotesVaultViewModel
     @State var showFileInputSheet: Bool = false
+    @State var showTextContentInputSheet: Bool = false
+    @FocusState var isFocused: Bool
     
     var body: some View {
         VStack(spacing: 10, content: {
-            ForEach(0..<5) { file in
-                buildFileIcons(title: "This is File \(file)")
+            ForEach(vm.notes, id: \.self) { file in
+                buildFileIcons(title: file.description)
             }
             Spacer()
         })
@@ -64,7 +66,8 @@ struct NotesFilesView: View {
                     .padding(.bottom, 20)
                 
                 Button {
-                    
+                    showFileInputSheet = false
+                    showTextContentInputSheet = true
                 } label: {
                     Text("Create File")
                         .padding(.vertical, 15)
@@ -77,10 +80,46 @@ struct NotesFilesView: View {
                                 .glassEffect(.regular)
                         )
                 }
+                .sheet(isPresented: $showTextContentInputSheet) {
+                    buildContentInputSheet()
+                        .toolbar {
+                            ToolbarItem(
+                                placement: .topBarLeading) {
+                                    Button(action: {
+                                        
+                                    }) {
+                                        Image(systemName: "xmark")
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+                            
+                            if isFocused && !vm.content.description.isEmpty {
+                                ToolbarItem(
+                                    placement: .topBarTrailing) {
+                                        Button(role: .confirm) {
+                                            vm.createFile(folderName: folderTitle ?? "")
+                                        }
+                                    }
+                            }
+                        }
+                }
             }
             .padding(.horizontal)
             .padding(.vertical)
         }
+    }
+    
+    // CONTENT INPUT SHEET
+    @ViewBuilder
+    func buildContentInputSheet() -> some View {
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $vm.content)
+                .frame(maxWidth: .infinity)
+                .focused($isFocused)
+                .textEditorStyle(.plain)
+                .padding()
+        }
+        
     }
     
     // FOLDER ICONS

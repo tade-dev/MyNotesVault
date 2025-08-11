@@ -18,14 +18,14 @@ struct NotesFolderView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 20) {
-                ForEach(0..<5) { folder in
+                ForEach(vm.folders, id: \.self) { folder in
                     NavigationLink {
                         NotesFilesView(
-                            folderTitle: "This is folder \(folder.description)",
+                            folderTitle: folder.description,
                             vm: vm
                         )
                     } label: {
-                        buildFolderIcons(title: "This is folder \(folder.description)")
+                        buildFolderIcons(title: folder.description)
                     }
                 }
                 Spacer()
@@ -75,7 +75,8 @@ struct NotesFolderView: View {
                     .padding(.bottom, 20)
                 
                 Button {
-                    
+                    vm.createFolder()
+                    showFolderInputSheet = false
                 } label: {
                     Text("Create Folder")
                         .padding(.vertical, 15)

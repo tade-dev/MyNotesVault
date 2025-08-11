@@ -14,15 +14,19 @@ class NotesVaultViewModel: ObservableObject {
     @Published var noteText: String = ""
     @Published var folders: [String] = []
     @Published var notes: [String] = []
-    @Published var content: String = ""
+    @Published var content = AttributedString()
     let manager = LocalFileManager.instance
     
     init() {
-        
+        loadAllFolders()
     }
     
     func loadAllFolderContent(folderName: String) {
         self.notes = manager.loadAllFolderContents(folderName: folderName) ?? []
+    }
+    
+    func loadAllFolders() {
+        self.folders = manager.loadAllContents() ?? []
     }
     
     func createFolder() {
@@ -41,7 +45,7 @@ class NotesVaultViewModel: ObservableObject {
     }
     
     func createFile(folderName: String) {
-        var contentData = content.data(using: .utf8)
+        let contentData = content.description.data(using: .utf8)
         manager.createFile(fileName: noteText, folderName: folderName, content: contentData!)
         self.content = ""
         self.noteText = ""

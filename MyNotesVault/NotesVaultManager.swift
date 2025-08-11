@@ -15,6 +15,27 @@ class LocalFileManager {
         
     }
     
+    func loadAllContents() -> [String]? {
+        guard let path = FileManager
+            .default
+            .urls(
+                for: .documentDirectory,
+                in: .userDomainMask
+            ).first else {
+            
+            return nil
+        }
+        
+        do {
+            let content = try FileManager.default.contentsOfDirectory(atPath: path.path())
+            return content
+        } catch let e {
+            print("Error getting contents of folder \(e)")
+            return []
+        }
+        
+    }
+    
     func loadAllFolderContents(folderName: String) -> [String]? {
         guard let path = FileManager
             .default
@@ -28,7 +49,7 @@ class LocalFileManager {
         }
         
         do {
-            var content = try FileManager.default.contentsOfDirectory(atPath: path.path())
+            let content = try FileManager.default.contentsOfDirectory(atPath: path.path())
             return content
         } catch let e {
             print("Error getting contents of folder \(e)")
