@@ -13,8 +13,8 @@ struct NotesFilesView: View {
     @ObservedObject var vm: NotesVaultViewModel
     @State var showFileInputSheet: Bool = false
     @State var showTextContentInputSheet: Bool = false
-    @FocusState var isFocused: Bool
     
+
     var body: some View {
         VStack(spacing: 10, content: {
             ForEach(vm.notes, id: \.self) { file in
@@ -66,7 +66,6 @@ struct NotesFilesView: View {
                     .padding(.bottom, 20)
                 
                 Button {
-                    showFileInputSheet = false
                     showTextContentInputSheet = true
                 } label: {
                     Text("Create File")
@@ -81,45 +80,18 @@ struct NotesFilesView: View {
                         )
                 }
                 .sheet(isPresented: $showTextContentInputSheet) {
-                    buildContentInputSheet()
-                        .toolbar {
-                            ToolbarItem(
-                                placement: .topBarLeading) {
-                                    Button(action: {
-                                        
-                                    }) {
-                                        Image(systemName: "xmark")
-                                            .foregroundStyle(.white)
-                                    }
-                                }
-                            
-                            if isFocused && !vm.content.description.isEmpty {
-                                ToolbarItem(
-                                    placement: .topBarTrailing) {
-                                        Button(role: .confirm) {
-                                            vm.createFile(folderName: folderTitle ?? "")
-                                        }
-                                    }
-                            }
-                        }
+                    NoteContentEditor(
+                        vm: vm,
+                        showFileInputSheet: $showFileInputSheet,
+                        fileName: vm.noteText
+                    )
+                    .presentationDetents([.medium, .large])
+                    .frame(maxWidth: .infinity)
                 }
             }
             .padding(.horizontal)
             .padding(.vertical)
         }
-    }
-    
-    // CONTENT INPUT SHEET
-    @ViewBuilder
-    func buildContentInputSheet() -> some View {
-        ZStack(alignment: .topLeading) {
-            TextEditor(text: $vm.content)
-                .frame(maxWidth: .infinity)
-                .focused($isFocused)
-                .textEditorStyle(.plain)
-                .padding()
-        }
-        
     }
     
     // FOLDER ICONS
