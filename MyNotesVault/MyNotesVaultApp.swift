@@ -11,7 +11,7 @@ import SwiftUI
 struct MyNotesVaultApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NotesFolderView()
         }
     }
 }
